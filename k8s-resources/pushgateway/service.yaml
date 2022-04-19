@@ -4,6 +4,7 @@ metadata:
   labels:
     app: pushgateway
   name: pushgateway
+  namespace: pushgateway
 spec:
   ports:
   - name: 8080-tcp
