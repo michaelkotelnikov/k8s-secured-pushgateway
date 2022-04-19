@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushgateway
+  labels:
+    app: pushgateway
+spec:
+  selector:
+    matchLabels:
+      app: pushgateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pushgateway
+    spec:
+      containers:
+        - name: pushgateway
+          image: docker.io/bitnami/pushgateway:1.4.2
+          ports:
+            - containerPort: 9091
+              name: pushgateway
+        - name: nginx
+          image: docker.io/bitnami/nginx:1.20.2
+          ports:
+            - containerPort: 8080
+              name: nginx
+          volumeMounts:
+            - mountPath: /opt/bitnami/nginx/conf/nginx.conf
+              name: nginx-conf
+              subPath: nginx.conf
+            - mountPath: /opt/bitnami/nginx/conf/htpasswd
+              name: htpasswd
+              subPath: htpasswd
+      volumes:
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: nginx.conf
+              path: nginx.conf
+            name: nginx-conf
+          name: nginx-conf
+        - secret:
+            secretName: htpasswd
+          name: htpasswd
